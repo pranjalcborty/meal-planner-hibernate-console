@@ -1,6 +1,5 @@
 package net.therap.mealplanner.helper;
 
-import com.sun.javafx.collections.MappingChange;
 import net.therap.mealplanner.dao.ItemDao;
 import net.therap.mealplanner.dao.MealDao;
 import net.therap.mealplanner.domains.Item;
@@ -8,9 +7,11 @@ import net.therap.mealplanner.domains.Meal;
 import net.therap.mealplanner.enums.Day;
 import net.therap.mealplanner.enums.Type;
 
-import java.util.*;
-
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  * @author pranjal.chakraborty
@@ -40,10 +41,10 @@ public class MealHelper {
         itemDao = new ItemDao();
     }
 
-    public Day daySelect(){
+    public Day daySelect() {
         Iterator iterator = Helper.getDayMap().entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry)iterator.next();
+            Map.Entry pair = (Map.Entry) iterator.next();
             System.out.println(pair.getKey() + " = " + pair.getValue());
         }
         int daySelected = Integer.parseInt(new Scanner(System.in).nextLine());
@@ -51,10 +52,10 @@ public class MealHelper {
         return Helper.getDay(daySelected);
     }
 
-    public Type typeSelect(){
+    public Type typeSelect() {
         Iterator iterator = Helper.getTypeMap().entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry)iterator.next();
+            Map.Entry pair = (Map.Entry) iterator.next();
             System.out.println(pair.getKey() + " = " + pair.getValue());
         }
         int typeSelected = Integer.parseInt(new Scanner(System.in).nextLine());
@@ -67,7 +68,7 @@ public class MealHelper {
     }
 
     public void showMealPlans() throws SQLException {
-        for(Meal meal: mealDao.getMeals()){
+        for (Meal meal : mealDao.getMeals()) {
             System.out.print(meal.getDay() + TAB + meal.getType() + TAB);
             printItems(meal.getItems());
         }
@@ -85,7 +86,6 @@ public class MealHelper {
         List<Item> items = itemDao.getItems(new Scanner(System.in).nextLine().split(SPACE));
 
         mealDao.addItemsToMeal(day, type, items);
-
     }
 
     public void addItem() throws SQLException {
@@ -96,24 +96,24 @@ public class MealHelper {
     public void showItems() throws SQLException {
         List<Item> items = itemDao.generateItems();
         System.out.println("********************");
-        for (Item item: items){
+        for (Item item : items) {
             System.out.println(item.getName());
         }
     }
 
-    public void showMenuItems() throws SQLException{
+    public void showMenuItems() throws SQLException {
         List<Item> items = itemDao.generateItems();
         System.out.println("********************");
-        for (Item item: items){
+        for (Item item : items) {
             System.out.println(item.getId() + TAB + item.getName());
         }
     }
 
-    public void printItems(List<Item> items){
-        for (Item item: items){
+    public void printItems(List<Item> items) {
+        for (Item item : items) {
             System.out.print(item.getName() + COMMA);
         }
-        if(items.size() == 0){
+        if (items.size() == 0) {
             System.out.println("No records");
         }
         System.out.println();
