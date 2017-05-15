@@ -17,17 +17,6 @@ public class DayDao {
 
     public static Day getDay(int daySlot) throws SQLException {
 
-        Connection connect = Helper.connect();
-        PreparedStatement preparedStatement = connect.prepareStatement(FIND_DAY);
-        preparedStatement.setInt(1, daySlot);
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        Day day = null;
-        if (resultSet.next()) {
-            day = Day.valueOf(resultSet.getString("day"));
-        }
-
-        connect.close();
-        return day;
+        return null;
     }
 }
