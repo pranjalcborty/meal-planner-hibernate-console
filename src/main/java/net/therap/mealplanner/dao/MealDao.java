@@ -2,7 +2,12 @@ package net.therap.mealplanner.dao;
 
 import net.therap.mealplanner.domains.Item;
 import net.therap.mealplanner.domains.Meal;
+import net.therap.mealplanner.enums.Day;
+import net.therap.mealplanner.enums.Type;
 import net.therap.mealplanner.helper.Helper;
+import net.therap.mealplanner.helper.HibernateHelper;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,35 +22,25 @@ import java.util.List;
  */
 public class MealDao {
 
-    private static final String VIEW_MEALS_STRING = "SELECT * FROM meals";
-    private static final String ADD_ITEM_TO_MEAL = "INSERT IGNORE INTO meal_item(meal_id, item_id) VALUES (?, ?)";
-
     public List<Meal> getMeals() throws SQLException {
-        Connection connect = Helper.connect();
+        Session session = HibernateHelper.getSessionFactory().openSession();
+        Query query = session.createQuery("from Meal");
 
-        List<Meal> meals = new ArrayList<>();
-        ResultSet resultSet = connect.prepareStatement(VIEW_MEALS_STRING).executeQuery();
-
-        while (resultSet.next()) {
-            int daySlot = resultSet.getInt("meal_id");
-            List<Item> items = ItemDao.getItems(daySlot);
-
-            meals.add(new Meal(resultSet.getInt("meal_id"),
-                    DayDao.getDay(daySlot), TypeDao.getType(daySlot), items));
-        }
-
-        connect.close();
+        List<Meal> meals = query.list();
+        session.close();
         return meals;
     }
 
-    public void addItemToMeal(int itemId, int mealId) throws SQLException {
-        Connection connect = Helper.connect();
+    public void addItemsToMeal(Day day, Type type, List<Item> items) throws SQLException {
+        Meal meal = new Meal();
+        meal.setDay(day);
+        meal.setType(type);
+        meal.setItems(items);
 
-        PreparedStatement preparedStatement = connect.prepareStatement(ADD_ITEM_TO_MEAL);
-        preparedStatement.setInt(1, mealId);
-        preparedStatement.setInt(2, itemId);
-        preparedStatement.executeUpdate();
-
-        connect.close();
+        Session session = HibernateHelper.getSessionFactory().openSession();
+        session.beginTransaction();
+        session.save(meal);
+        session.getTransaction().commit();
+        session.close();
     }
 }
